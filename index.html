@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>APLA FASHION HUB</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial;
+      text-align: center;
+      background: #f5f5f5;
+    }
+
+    /* Header */
+    .header {
+      background: black;
+      color: white;
+      padding: 20px;
+      font-size: 30px;
+      font-weight: bold;
+    }
+
+    /* Container */
+    .container {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 25px;
+      margin-top: 40px;
+    }
+
+    /* Cards */
+    .card {
+      width: 200px;
+      border-radius: 12px;
+      overflow: hidden;
+      background: white;
+      cursor: pointer;
+      transition: 0.3s;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+
+    .card:hover {
+      transform: scale(1.05);
+    }
+
+    .card img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+    }
+
+    .card h3 {
+      padding: 10px;
+      margin: 0;
+    }
+
+    /* WhatsApp Button */
+    .whatsapp-btn {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #25D366;
+      color: white;
+      padding: 12px 18px;
+      border-radius: 50px;
+      text-decoration: none;
+      font-size: 18px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    }
+
+    .whatsapp-btn:hover {
+      background: #1ebc57;
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- Header -->
+<div class="header">
+  APLA FASHION HUB
+</div>
+
+<!-- Categories -->
+<div class="container">
+
+  <div class="card" onclick="openPage('clothes')">
+    <img src="images/clothes.jpg">
+    <h3>👕 Clothes</h3>
+  </div>
+
+  <div class="card" onclick="openPage('footwear')">
+    <img src="images/footwear.jpg">
+    <h3>👟 Footwear</h3>
+  </div>
+
+  <div class="card" onclick="openPage('sunglasses')">
+    <img src="images/sunglasses.jpg">
+    <h3>🕶️ Sunglasses</h3>
+  </div>
+
+  <div class="card" onclick="openPage('home')">
+    <img src="images/home.jpg">
+    <h3>🏠 Home Items</h3>
+  </div>
+
+</div>
+
+<!-- WhatsApp Chat Button -->
+<a href="https://wa.me/919923343791?text=Hello%20I%20want%20to%20buy%20product"
+   target="_blank"
+   class="whatsapp-btn">
+   💬 Chat
+</a>
+
+<script>
+function openPage(page){
+  window.location.href = page + ".html";
+}
+</script>
+
+</body>
+</html>
