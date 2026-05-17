@@ -2,33 +2,92 @@
 <html>
 <head>
     <title>Login</title>
+
+    <style>
+        body {
+            font-family: Arial;
+            text-align: center;
+        }
+
+        h2 {
+            background: black;
+            color: white;
+            padding: 10px;
+        }
+
+        .box {
+            margin: 30px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+        }
+
+        input {
+            padding: 10px;
+            margin: 10px;
+            width: 250px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background: black;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: green;
+        }
+    </style>
 </head>
+
 <body>
 
-<h2>Customer Details</h2>
+<h2>🔐 Customer Login</h2>
 
-<input type="text" id="name" placeholder="Name"><br><br>
-<input type="text" id="mobile" placeholder="Mobile Number"><br><br>
-<input type="text" id="address" placeholder="Address"><br><br>
-<input type="text" id="pincode" placeholder="Pincode"><br><br>
+<div class="box">
 
-<button onclick="saveData()">Save & Continue</button>
+    <input type="text" id="name" placeholder="Enter Name"><br>
+    <input type="text" id="mobile" placeholder="Enter Mobile"><br>
+    <input type="text" id="address" placeholder="Enter Address"><br>
+    <input type="text" id="pincode" placeholder="Enter Pincode"><br>
+
+    <button onclick="login()">Login</button>
+
+</div>
 
 <script>
-function saveData(){
+
+function login(){
+
+    let name = document.getElementById("name").value;
+    let mobile = document.getElementById("mobile").value;
+    let address = document.getElementById("address").value;
+    let pincode = document.getElementById("pincode").value;
+
+    // ✅ Validation
+    if(name=="" || mobile=="" || address=="" || pincode==""){
+        alert("Please fill all details");
+        return;
+    }
+
+    // ✅ Save in localStorage
     let user = {
-        name: document.getElementById("name").value,
-        mobile: document.getElementById("mobile").value,
-        address: document.getElementById("address").value,
-        pincode: document.getElementById("pincode").value
+        name: name,
+        mobile: mobile,
+        address: address,
+        pincode: pincode
     };
 
     localStorage.setItem("user", JSON.stringify(user));
 
-    alert("Details Saved ✅");
+    alert("Login Successful ✅");
 
-    window.location.href = "index.html";
+    // 👉 Redirect to cart
+    window.location.href = "cart.html";
 }
+
 </script>
 
 </body>
