@@ -55,6 +55,14 @@
 
 <body>
 
+<!-- 🔐 LOGIN CHECK -->
+<script>
+let user = JSON.parse(localStorage.getItem("user"));
+if(!user){
+    window.location.href = "login.html";
+}
+</script>
+
 <!-- 🛒 Cart Button -->
 <div style="text-align:right; margin:10px;">
     <a href="cart.html">
@@ -92,18 +100,22 @@ let products = [
 
 // 🛒 ADD TO CART
 function addToCart(name, price, image, size, qty) {
-
     let cart = JSON.parse(localStorage.getItem("cart")) || [];
-
     cart.push({ name, price, image, size, qty });
-
     localStorage.setItem("cart", JSON.stringify(cart));
-
     alert(name + " added to cart ✅");
 }
 
-// 💰 BUY NOW (UPI + WhatsApp)
-function buyNow(name, price, size, qty) {
+// 💰 BUY NOW (FINAL)
+function buyNow(name, price, size, qty){
+
+    let user = JSON.parse(localStorage.getItem("user"));
+
+    if(!user){
+        alert("Please login first");
+        window.location.href = "login.html";
+        return;
+    }
 
     let total = price * qty;
 
@@ -111,15 +123,24 @@ function buyNow(name, price, size, qty) {
     let upi = `upi://pay?pa=9923343791@ybl&pn=FashionHub&am=${total}&cu=INR`;
     window.location.href = upi;
 
-    // WhatsApp message
-    let msg = `Order Details:\nProduct: ${name}\nSize: ${size}\nQty: ${qty}\nTotal: ₹${total}`;
+    // WhatsApp Message
+    let msg = `🛒 Order Details:
+Product: ${name}
+Size: ${size}
+Qty: ${qty}
+Total: ₹${total}
+
+👤 Customer Details:
+Name: ${user.name}
+Mobile: ${user.mobile}
+Address: ${user.address}
+Pincode: ${user.pincode}`;
+
     let phone = "919923343791";
 
-    let url = `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
-    
-    setTimeout(() => {
-        window.open(url, "_blank");
-    }, 2000);
+    setTimeout(()=>{
+        window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, "_blank");
+    },2000);
 }
 
 // 🛒 SHOW PRODUCTS
