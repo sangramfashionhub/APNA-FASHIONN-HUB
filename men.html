@@ -4,10 +4,7 @@
     <title>Men Collection</title>
 
     <style>
-        body {
-            font-family: Arial;
-            text-align: center;
-        }
+        body { font-family: Arial; text-align: center; }
 
         h1 {
             background: black;
@@ -29,20 +26,14 @@
             border-radius: 10px;
         }
 
-        .product-card img {
+        img {
             width: 100%;
             height: 200px;
         }
 
-        .price {
-            color: green;
-            font-weight: bold;
-        }
+        .price { color: green; font-weight: bold; }
 
-        select, input {
-            margin: 5px;
-            padding: 5px;
-        }
+        select, input { margin: 5px; padding: 5px; }
 
         button {
             background: black;
@@ -53,9 +44,7 @@
             margin: 5px;
         }
 
-        button:hover {
-            background: green;
-        }
+        button:hover { background: green; }
     </style>
 </head>
 
@@ -78,14 +67,19 @@ if(!user){
     </a>
 </div>
 
+<!-- 📲 WhatsApp Button -->
+<div style="margin:10px;">
+    <button onclick="sendWhatsApp()">📲 Send WhatsApp Order</button>
+</div>
+
 <div class="container" id="productList"></div>
 
 <script>
 
 // 🟢 PRODUCTS
 let products = [
-    { name: "White Shirt", price: 9, size: ["S","L","XL","XXL"], image: "men.white.shirt.jpeg" },
-    { name: "Black Jeans", price: 999, size: ["30","32","34","36","38"], image: "men.black.jean.jpeg" },
+    { name: "White Shirt", price: 499, size: ["S","L","XL"], image: "men.white.shirt.jpeg" },
+    { name: "Black Jeans", price: 999, size: ["30","32","34"], image: "men.black.jean.jpeg" },
     { name: "Red T-Shirt", price: 299, size: ["S","L","XL"], image: "men.tshirt.red.jpeg" }
 ];
 
@@ -100,27 +94,21 @@ function addToCart(name, price, image, size, qty){
 
     localStorage.setItem("cart", JSON.stringify(cart));
 
-    alert(name + " added to cart ✅");
+    alert("Added to cart ✅");
 }
 
-// 💳 BUY NOW (FINAL FIX)
+// 💳 BUY NOW (ONLY UPI)
 function buyNow(name, price, size, qty){
-
-    let user = JSON.parse(localStorage.getItem("user"));
-
-    if(!user){
-        alert("Please login first");
-        window.location.href = "login.html";
-        return;
-    }
 
     qty = parseInt(qty);
     let total = price * qty;
 
+    let user = JSON.parse(localStorage.getItem("user"));
+
     let orderId = Math.floor(Math.random() * 100000);
 
-    let msg = `🛍️ New Order
-Order ID: ${orderId}
+    let msg = `🛍️ Order
+ID: ${orderId}
 Product: ${name}
 Size: ${size}
 Qty: ${qty}
@@ -132,16 +120,27 @@ Pincode: ${user.pincode}`;
 
     let whatsapp = "https://wa.me/919923343791?text=" + encodeURIComponent(msg);
 
+    // save WhatsApp link
     localStorage.setItem("whatsappLink", whatsapp);
 
-    // 💳 UPI
+    // UPI open
     let upi = "upi://pay?pa=9923343791@upi&pn=FashionHub&am=" + total + "&cu=INR";
     window.location.href = upi;
 
-    // 📲 WhatsApp after payment
-    setTimeout(() => {
-        window.open(whatsapp, "_blank");
-    }, 4000);
+    alert("Payment झाल्यावर WhatsApp button वापरा 📲");
+}
+
+// 📲 WhatsApp SEND (WORKING 100%)
+function sendWhatsApp(){
+
+    let link = localStorage.getItem("whatsappLink");
+
+    if(!link){
+        alert("First Buy Now किंवा Cart वापरा");
+        return;
+    }
+
+    window.open(link, "_blank");
 }
 
 // 🟢 SHOW PRODUCTS
