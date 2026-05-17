@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Men Clothing</title>
+
+    <style>
+        body {
+            font-family: Arial;
+            text-align: center;
+        }
+
+        .container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .product-card {
+            width: 200px;
+            margin: 20px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        .product-card img {
+            width: 100%;
+            height: 200px;
+        }
+
+        .price {
+            color: green;
+            font-weight: bold;
+        }
+
+        button {
+            background: black;
+            color: white;
+            padding: 8px;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: green;
+        }
+    </style>
+</head>
+
+<body>
+
+<h1>Men Collection</h1>
+
+<div class="container" id="productList"></div>
+
+<script>
+// 🛒 PRODUCT LIST (HERE YOU ADD PRODUCTS)
+let products = [
+    { name: "Shirt", price: 499, image: "men1.jpeg" },
+    { name: "Jeans", price: 999, image: "men2.jpeg" },
+    { name: "T-Shirt", price: 299, image: "men3.jpeg" }
+];
+
+// 🛒 ADD TO CART FUNCTION
+function addToCart(name, price, image) {
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+    cart.push({ name, price, image });
+
+    localStorage.setItem("cart", JSON.stringify(cart));
+
+    alert(name + " added to cart ✅");
+}
+
+// 🛒 SHOW PRODUCTS ON PAGE
+let container = document.getElementById("productList");
+
+products.forEach(item => {
+    container.innerHTML += `
+        <div class="product-card">
+            <img src="${item.image}">
+            <h3>${item.name}</h3>
+            <p class="price">₹${item.price}</p>
+            <button onclick="addToCart('${item.name}', ${item.price}, '${item.image}')">
+                Add to Cart
+            </button>
+        </div>
+    `;
+});
+</script>
+
+</body>
+</html>
