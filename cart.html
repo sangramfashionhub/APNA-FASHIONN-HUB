@@ -2,88 +2,130 @@
 <html>
 <head>
     <title>Cart</title>
+
     <style>
-        body { font-family: Arial; text-align: center; }
+        body {
+            font-family: Arial;
+            text-align: center;
+        }
 
         .item {
             border: 1px solid #ccc;
             margin: 10px;
             padding: 10px;
+            border-radius: 10px;
         }
 
         button {
+            padding: 8px;
+            margin: 5px;
+            cursor: pointer;
+            border: none;
             background: black;
             color: white;
-            padding: 8px;
-            border: none;
-            cursor: pointer;
-            margin: 5px;
         }
 
-        button:hover { background: green; }
+        button:hover {
+            background: green;
+        }
     </style>
 </head>
 
 <body>
 
-<h1>Your Cart</h1>
+<h2>🛒 Your Cart</h2>
 
 <div id="cartItems"></div>
 
-<h2 id="total"></h2>
+<br>
 
-<button onclick="checkout()">Checkout</button>
+<button onclick="checkoutAll()">Checkout All</button>
 
 <script>
 
+// 🔐 LOGIN CHECK
+let user = JSON.parse(localStorage.getItem("user"));
+if(!user){
+    window.location.href = "login.html";
+}
+
+// 🛒 LOAD CART
 let cart = JSON.parse(localStorage.getItem("cart")) || [];
-
 let container = document.getElementById("cartItems");
-let total = 0;
 
-cart.forEach((item, index) => {
+if(cart.length === 0){
+    container.innerHTML = "<h3>Cart is empty</h3>";
+}else{
+    cart.forEach((item, index) => {
+        container.innerHTML += `
+            <div class="item">
+                <h3>${item.name}</h3>
+                <p>Price: ₹${item.price}</p>
+                <p>Size: ${item.size}</p>
+                <p>Qty: ${item.qty}</p>
 
-    total += item.price * item.qty;
+                <button onclick="removeItem(${index})">Remove</button>
+            </div>
+        `;
+    });
+}
 
-    container.innerHTML += `
-        <div class="item">
-            <h3>${item.name}</h3>
-            <p>Size: ${item.size}</p>
-            <p>Qty: ${item.qty}</p>
-            <p>Price: ₹${item.price}</p>
-
-            <button onclick="removeItem(${index})">Remove</button>
-        </div>
-    `;
-});
-
-document.getElementById("total").innerText = "Total: ₹" + total;
-
-// ❌ Remove Item
-function removeItem(index) {
-    cart.splice(index, 1);
+// ❌ REMOVE ITEM
+function removeItem(index){
+    cart.splice(index,1);
     localStorage.setItem("cart", JSON.stringify(cart));
     location.reload();
 }
 
-// 💰 Checkout
-function checkout() {
+// 💰 CHECKOUT ALL
+function checkoutAll(){
 
-    let upi = `upi://pay?pa=9923343791@ybl&pn=FashionHub&am=${total}&cu=INR`;
-    window.location.href = upi;
+    if(cart.length === 0){
+        alert("Cart is empty ❌");
+        return;
+    }
 
-    let msg = "Order Details:\n";
+    let total = 0;
+    let orderText = "";
+
     cart.forEach(item => {
-        msg += `${item.name} | Size:${item.size} | Qty:${item.qty}\n`;
+        total += item.price * item.qty;
+
+        orderText += `Product: ${item.name}
+Size: ${item.size}
+Qty: ${item.qty}
+Price: ₹${item.price}
+
+`;
     });
-    msg += `Total: ₹${total}`;
+
+    // 📱 WhatsApp FIRST
+    let msg = `🛒 Order Details:
+
+${orderText}
+
+Total: ₹${total}
+
+👤 Customer Details:
+Name: ${user.name}
+Mobile: ${user.mobile}
+Address: ${user.address}
+Pincode: ${user.pincode}`;
 
     let phone = "919923343791";
 
-    setTimeout(() => {
-        window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, "_blank");
-        window.location.href = "success.html";
-    }, 3000);
+    let waUrl = `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
+    window.open(waUrl, "_blank");
+
+    // 💸 UPI AFTER
+    let upi = `upi://pay?pa=9923343791@ybl&pn=FashionHub&am=${total}&cu=INR`;
+
+    setTimeout(()=>{
+        window.location.href = upi;
+    },1500);
+
+    // 🧹 Clear cart after order
+    localStorage.removeItem("cart");
 }
 
 </script>
