@@ -1,12 +1,18 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Men Clothing</title>
+    <title>Men Collection</title>
 
     <style>
         body {
             font-family: Arial;
             text-align: center;
+        }
+
+        h1 {
+            background: black;
+            color: white;
+            padding: 10px;
         }
 
         .container {
@@ -63,30 +69,30 @@ if(!user){
 }
 </script>
 
-<!-- 🛒 Cart Button -->
+<h1>👕 Men Collection</h1>
+
+<!-- 🛒 CART BUTTON -->
 <div style="text-align:right; margin:10px;">
     <a href="cart.html">
         <button>🛒 Cart</button>
     </a>
 </div>
 
-<h1>Men Collection</h1>
-
 <div class="container" id="productList"></div>
 
 <script>
 
-// 🛒 PRODUCTS
+// 🟢 PRODUCTS
 let products = [
-    { name: "White Shirt", price: 9, size: ["S","L","XL","XXL"], image: "men.white.shirt.jpeg" },
+    { name: "White Shirt", price: 499, size: ["S","L","XL","XXL"], image: "men.white.shirt.jpeg" },
     { name: "Black Jeans", price: 999, size: ["30","32","34","36","38"], image: "men.black.jean.jpeg" },
     { name: "Red T-Shirt", price: 299, size: ["S","L","XL"], image: "men.tshirt.red.jpeg" }
 ];
 
-// 🛒 ADD TO CART (FIXED)
-function addToCart(name, price, image, size, qty) {
+// 🛒 ADD TO CART
+function addToCart(name, price, image, size, qty){
 
-    qty = parseInt(qty); // ✅ FIX
+    qty = parseInt(qty);
 
     let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
@@ -97,11 +103,8 @@ function addToCart(name, price, image, size, qty) {
     alert(name + " added to cart ✅");
 }
 
-// 💰 BUY NOW (FINAL FIX)
+// 💳 BUY NOW (FINAL FIX)
 function buyNow(name, price, size, qty){
-
-    qty = parseInt(qty); // ✅ FIX
-    let total = price * qty;
 
     let user = JSON.parse(localStorage.getItem("user"));
 
@@ -111,31 +114,37 @@ function buyNow(name, price, size, qty){
         return;
     }
 
-    // 🟢 UPI
-    let upi = `upi://pay?pa=9923343791@ybl&pn=FashionHub&am=${total}&cu=INR`;
-    window.location.href = upi;
+    qty = parseInt(qty);
+    let total = price * qty;
 
-    // 🟢 WhatsApp (delay increase)
-    let msg = `🛒 Order Details:
+    let orderId = Math.floor(Math.random() * 100000);
+
+    let msg = `🛍️ New Order
+Order ID: ${orderId}
 Product: ${name}
 Size: ${size}
 Qty: ${qty}
-Total: ₹${total}
-
-👤 Customer Details:
+Amount: ₹${total}
 Name: ${user.name}
 Mobile: ${user.mobile}
 Address: ${user.address}
 Pincode: ${user.pincode}`;
 
-    let phone = "919923343791";
+    let whatsapp = "https://wa.me/919923343791?text=" + encodeURIComponent(msg);
 
-    setTimeout(()=>{
-        window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, "_blank");
-    },5000); // ✅ 5 sec delay
+    localStorage.setItem("whatsappLink", whatsapp);
+
+    // 💳 UPI
+    let upi = "upi://pay?pa=9923343791@upi&pn=FashionHub&am=" + total + "&cu=INR";
+    window.location.href = upi;
+
+    // 📲 WhatsApp after payment
+    setTimeout(() => {
+        window.open(whatsapp, "_blank");
+    }, 4000);
 }
 
-// 🛒 SHOW PRODUCTS
+// 🟢 SHOW PRODUCTS
 let container = document.getElementById("productList");
 
 products.forEach((item, index) => {
@@ -155,8 +164,8 @@ products.forEach((item, index) => {
             <br>
 
             <button onclick="addToCart(
-                '${item.name}', 
-                ${item.price}, 
+                '${item.name}',
+                ${item.price},
                 '${item.image}',
                 document.getElementById('size${index}').value,
                 document.getElementById('qty${index}').value
@@ -165,7 +174,7 @@ products.forEach((item, index) => {
             </button>
 
             <button onclick="buyNow(
-                '${item.name}', 
+                '${item.name}',
                 ${item.price},
                 document.getElementById('size${index}').value,
                 document.getElementById('qty${index}').value
