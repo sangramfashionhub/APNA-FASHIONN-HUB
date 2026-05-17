@@ -56,19 +56,30 @@
 
     <button onclick="clearCart()">🗑️ Clear Cart</button>
     <br><br>
+
     <button onclick="payNow()">💳 Pay & Order</button>
+
+    <br><br>
+
+    <button onclick="sendWhatsApp()">📲 Send Order on WhatsApp</button>
 
 </div>
 
 <script>
 
-// 🟢 Load Cart
+// 🔐 Login check
+let user = JSON.parse(localStorage.getItem("user"));
+if(!user){
+    window.location.href = "login.html";
+}
+
+// 🛒 Load cart
 let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
 let itemsDiv = document.getElementById("items");
 let total = 0;
 
-// 🟢 Display Items
+// 📦 Show cart items
 function loadCart(){
 
     itemsDiv.innerHTML = "";
@@ -80,7 +91,8 @@ function loadCart(){
 
         itemsDiv.innerHTML += `
             <div class="item">
-                ${item.name} (${item.size}) - ₹${item.price} × ${item.qty} = ₹${itemTotal}
+                <b>${item.name}</b> (${item.size})<br>
+                ₹${item.price} × ${item.qty} = ₹${itemTotal}
                 <br>
                 <button onclick="removeItem(${index})">❌ Remove</button>
             </div>
@@ -94,61 +106,60 @@ function loadCart(){
 
 loadCart();
 
-// ❌ Remove Item
+// ❌ Remove item
 function removeItem(index){
-
     cart.splice(index, 1);
-
     localStorage.setItem("cart", JSON.stringify(cart));
-
     loadCart();
 }
 
-// 🗑️ Clear Cart
+// 🗑️ Clear cart
 function clearCart(){
     localStorage.removeItem("cart");
     location.reload();
 }
 
-// 💳 Payment
+// 💳 Pay now (UPI first)
 function payNow(){
-
-    let user = JSON.parse(localStorage.getItem("user"));
-
-    if(!user){
-        alert("Please login first");
-        window.location.href = "login.html";
-        return;
-    }
 
     if(total == 0){
         alert("Cart is empty");
         return;
     }
 
-    let upiLink = "upi://pay?pa=9923343791@upi&pn=APNA FASHION HUB&am=" + total + "&cu=INR";
+    let orderId = Math.floor(Math.random() * 100000);
 
-    // 🟢 First open UPI
+    let msg = "🛍️ *New Order* %0A"
+            + "Order ID: " + orderId + "%0A"
+            + "Name: " + user.name + "%0A"
+            + "Mobile: " + user.mobile + "%0A"
+            + "Address: " + user.address + "%0A"
+            + "Pincode: " + user.pincode + "%0A"
+            + "Amount: ₹" + total;
+
+    let whatsapp = "https://wa.me/919923343791?text=" + msg;
+
+    // save whatsapp link
+    localStorage.setItem("whatsappLink", whatsapp);
+
+    // UPI open
+    let upiLink = "upi://pay?pa=9923343791@upi&pn=FashionHub&am=" + total + "&cu=INR";
     window.location.href = upiLink;
 
-    // ⏳ Then WhatsApp after delay
-    setTimeout(function(){
+    alert("Payment केल्यानंतर WhatsApp button क्लिक करा 📲");
+}
 
-        let orderId = Math.floor(Math.random() * 100000);
+// 📲 WhatsApp send
+function sendWhatsApp(){
 
-        let msg = "🛍️ *New Order* %0A"
-                + "Order ID: " + orderId + "%0A"
-                + "Name: " + user.name + "%0A"
-                + "Mobile: " + user.mobile + "%0A"
-                + "Address: " + user.address + "%0A"
-                + "Pincode: " + user.pincode + "%0A"
-                + "Amount: ₹" + total;
+    let link = localStorage.getItem("whatsappLink");
 
-        let whatsapp = "https://wa.me/919923343791?text=" + msg;
+    if(!link){
+        alert("First Pay & Order click करा");
+        return;
+    }
 
-        window.open(whatsapp, "_blank");
-
-    }, 5000);
+    window.open(link, "_blank");
 }
 
 </script>
