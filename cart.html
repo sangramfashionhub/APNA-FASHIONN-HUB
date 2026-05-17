@@ -22,6 +22,11 @@
             border-radius: 10px;
         }
 
+        .item {
+            border-bottom: 1px solid #ccc;
+            padding: 10px;
+        }
+
         button {
             padding: 10px 20px;
             background: black;
@@ -42,15 +47,42 @@
 <h2>🛒 Your Cart</h2>
 
 <div class="box">
-    <p>Total Amount: ₹<span id="total">100</span></p>
+
+    <!-- 🟢 Items list -->
+    <div id="items"></div>
+
+    <!-- 🟢 Total -->
+    <h3>Total Amount: ₹<span id="total">0</span></h3>
 
     <button onclick="payNow()">💳 Pay & Order</button>
+
 </div>
 
 <script>
 
-// 🟢 Get total amount (future upgrade)
-let amount = document.getElementById("total").innerText;
+// 🟢 Load Cart
+let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+let itemsDiv = document.getElementById("items");
+let total = 0;
+
+// 🟢 Show items + calculate total
+cart.forEach(item => {
+
+    let itemTotal = item.price * item.qty; // ✅ quantity multiply
+
+    itemsDiv.innerHTML += `
+        <div class="item">
+            ${item.name} (${item.size}) - ₹${item.price} × ${item.qty} = ₹${itemTotal}
+        </div>
+    `;
+
+    total += itemTotal;
+});
+
+// 🟢 Show total
+document.getElementById("total").innerText = total;
+
 
 // 🟢 Payment Function
 function payNow(){
@@ -63,13 +95,17 @@ function payNow(){
         return;
     }
 
-    // 🟢 UPI Payment Link
-    let upiLink = "upi://pay?pa=9923343791@upi&pn=APNA FASHION HUB&am=" + amount + "&cu=INR";
+    if(total == 0){
+        alert("Cart is empty ❌");
+        return;
+    }
 
-    // 🟢 Open UPI App
+    // 🟢 UPI
+    let upiLink = "upi://pay?pa=9923343791@ybl&pn=FashionHub&am=" + total + "&cu=INR";
+
     window.location.href = upiLink;
 
-    // ⏳ Wait then open WhatsApp
+    // 🟢 WhatsApp
     setTimeout(function(){
 
         let orderId = Math.floor(Math.random() * 100000);
@@ -78,15 +114,13 @@ function payNow(){
                 + "Order ID: " + orderId + "%0A"
                 + "Name: " + user.name + "%0A"
                 + "Mobile: " + user.mobile + "%0A"
-                + "Address: " + user.address + "%0A"
-                + "Pincode: " + user.pincode + "%0A"
-                + "Amount: ₹" + amount;
+                + "Amount: ₹" + total;
 
         let whatsapp = "https://wa.me/919923343791?text=" + msg;
 
         window.open(whatsapp, "_blank");
 
-    }, 5000); // 5 sec delay
+    }, 5000);
 }
 
 </script>
