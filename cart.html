@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Cart</title>
+    <title>Your Cart</title>
 
     <style>
         body {
@@ -9,20 +9,26 @@
             text-align: center;
         }
 
-        .item {
-            border: 1px solid #ccc;
-            margin: 10px;
+        h2 {
+            background: black;
+            color: white;
             padding: 10px;
+        }
+
+        .box {
+            margin: 30px;
+            padding: 20px;
+            border: 1px solid #ccc;
             border-radius: 10px;
         }
 
         button {
-            padding: 8px;
-            margin: 5px;
-            cursor: pointer;
-            border: none;
+            padding: 10px 20px;
             background: black;
             color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
         }
 
         button:hover {
@@ -35,97 +41,52 @@
 
 <h2>🛒 Your Cart</h2>
 
-<div id="cartItems"></div>
+<div class="box">
+    <p>Total Amount: ₹<span id="total">100</span></p>
 
-<br>
-
-<button onclick="checkoutAll()">Checkout All</button>
+    <button onclick="payNow()">💳 Pay & Order</button>
+</div>
 
 <script>
 
-// 🔐 LOGIN CHECK
-let user = JSON.parse(localStorage.getItem("user"));
-if(!user){
-    window.location.href = "login.html";
-}
+// 🟢 Get total amount (future upgrade)
+let amount = document.getElementById("total").innerText;
 
-// 🛒 LOAD CART
-let cart = JSON.parse(localStorage.getItem("cart")) || [];
-let container = document.getElementById("cartItems");
+// 🟢 Payment Function
+function payNow(){
 
-if(cart.length === 0){
-    container.innerHTML = "<h3>Cart is empty</h3>";
-}else{
-    cart.forEach((item, index) => {
-        container.innerHTML += `
-            <div class="item">
-                <h3>${item.name}</h3>
-                <p>Price: ₹${item.price}</p>
-                <p>Size: ${item.size}</p>
-                <p>Qty: ${item.qty}</p>
+    let user = JSON.parse(localStorage.getItem("user"));
 
-                <button onclick="removeItem(${index})">Remove</button>
-            </div>
-        `;
-    });
-}
-
-// ❌ REMOVE ITEM
-function removeItem(index){
-    cart.splice(index,1);
-    localStorage.setItem("cart", JSON.stringify(cart));
-    location.reload();
-}
-
-// 💰 CHECKOUT ALL
-function checkoutAll(){
-
-    if(cart.length === 0){
-        alert("Cart is empty ❌");
+    if(!user){
+        alert("Please login first");
+        window.location.href = "login.html";
         return;
     }
 
-    let total = 0;
-    let orderText = "";
+    // 🟢 UPI Payment Link
+    let upiLink = "upi://pay?pa=9923343791@upi&pn=APNA FASHION HUB&am=" + amount + "&cu=INR";
 
-    cart.forEach(item => {
-        total += item.price * item.qty;
+    // 🟢 Open UPI App
+    window.location.href = upiLink;
 
-        orderText += `Product: ${item.name}
-Size: ${item.size}
-Qty: ${item.qty}
-Price: ₹${item.price}
+    // ⏳ Wait then open WhatsApp
+    setTimeout(function(){
 
-`;
-    });
+        let orderId = Math.floor(Math.random() * 100000);
 
-    // 📱 WhatsApp FIRST
-    let msg = `🛒 Order Details:
+        let msg = "🛍️ *New Order* %0A"
+                + "Order ID: " + orderId + "%0A"
+                + "Name: " + user.name + "%0A"
+                + "Mobile: " + user.mobile + "%0A"
+                + "Address: " + user.address + "%0A"
+                + "Pincode: " + user.pincode + "%0A"
+                + "Amount: ₹" + amount;
 
-${orderText}
+        let whatsapp = "https://wa.me/919923343791?text=" + msg;
 
-Total: ₹${total}
+        window.open(whatsapp, "_blank");
 
-👤 Customer Details:
-Name: ${user.name}
-Mobile: ${user.mobile}
-Address: ${user.address}
-Pincode: ${user.pincode}`;
-
-    let phone = "919923343791";
-
-    let waUrl = `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
-    window.open(waUrl, "_blank");
-
-    // 💸 UPI AFTER
-    let upi = `upi://pay?pa=9923343791@ybl&pn=FashionHub&am=${total}&cu=INR`;
-
-    setTimeout(()=>{
-        window.location.href = upi;
-    },1500);
-
-    // 🧹 Clear cart after order
-    localStorage.removeItem("cart");
+    }, 5000); // 5 sec delay
 }
 
 </script>
