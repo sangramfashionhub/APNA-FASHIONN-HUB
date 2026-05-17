@@ -57,7 +57,16 @@
 
 <body>
 
-<h1>APNA FASHIONn HUB</h1>
+<!-- 🔐 LOGIN CHECK -->
+<script>
+let user = JSON.parse(localStorage.getItem("user"));
+
+if(!user){
+    window.location.href = "login.html";
+}
+</script>
+
+<h1>APNA FASHION HUB</h1>
 
 <div class="container">
 
