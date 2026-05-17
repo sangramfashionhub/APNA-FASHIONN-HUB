@@ -16,19 +16,21 @@
         }
 
         .box {
-            margin: 30px;
+            margin: 20px;
             padding: 20px;
             border: 1px solid #ccc;
             border-radius: 10px;
         }
 
         .item {
-            border-bottom: 1px solid #ccc;
+            margin: 10px;
             padding: 10px;
+            border-bottom: 1px solid #ddd;
         }
 
         button {
-            padding: 10px 20px;
+            padding: 8px 15px;
+            margin: 5px;
             background: black;
             color: white;
             border: none;
@@ -48,12 +50,12 @@
 
 <div class="box">
 
-    <!-- 🟢 Items list -->
     <div id="items"></div>
 
-    <!-- 🟢 Total -->
-    <h3>Total Amount: ₹<span id="total">0</span></h3>
+    <h3>Total: ₹<span id="total">0</span></h3>
 
+    <button onclick="clearCart()">🗑️ Clear Cart</button>
+    <br><br>
     <button onclick="payNow()">💳 Pay & Order</button>
 
 </div>
@@ -66,25 +68,49 @@ let cart = JSON.parse(localStorage.getItem("cart")) || [];
 let itemsDiv = document.getElementById("items");
 let total = 0;
 
-// 🟢 Show items + calculate total
-cart.forEach(item => {
+// 🟢 Display Items
+function loadCart(){
 
-    let itemTotal = item.price * item.qty; // ✅ quantity multiply
+    itemsDiv.innerHTML = "";
+    total = 0;
 
-    itemsDiv.innerHTML += `
-        <div class="item">
-            ${item.name} (${item.size}) - ₹${item.price} × ${item.qty} = ₹${itemTotal}
-        </div>
-    `;
+    cart.forEach((item, index) => {
 
-    total += itemTotal;
-});
+        let itemTotal = item.price * item.qty;
 
-// 🟢 Show total
-document.getElementById("total").innerText = total;
+        itemsDiv.innerHTML += `
+            <div class="item">
+                ${item.name} (${item.size}) - ₹${item.price} × ${item.qty} = ₹${itemTotal}
+                <br>
+                <button onclick="removeItem(${index})">❌ Remove</button>
+            </div>
+        `;
 
+        total += itemTotal;
+    });
 
-// 🟢 Payment Function
+    document.getElementById("total").innerText = total;
+}
+
+loadCart();
+
+// ❌ Remove Item
+function removeItem(index){
+
+    cart.splice(index, 1);
+
+    localStorage.setItem("cart", JSON.stringify(cart));
+
+    loadCart();
+}
+
+// 🗑️ Clear Cart
+function clearCart(){
+    localStorage.removeItem("cart");
+    location.reload();
+}
+
+// 💳 Payment
 function payNow(){
 
     let user = JSON.parse(localStorage.getItem("user"));
@@ -96,16 +122,16 @@ function payNow(){
     }
 
     if(total == 0){
-        alert("Cart is empty ❌");
+        alert("Cart is empty");
         return;
     }
 
-    // 🟢 UPI
-    let upiLink = "upi://pay?pa=9923343791@ybl&pn=FashionHub&am=" + total + "&cu=INR";
+    let upiLink = "upi://pay?pa=9923343791@upi&pn=APNA FASHION HUB&am=" + total + "&cu=INR";
 
+    // 🟢 First open UPI
     window.location.href = upiLink;
 
-    // 🟢 WhatsApp
+    // ⏳ Then WhatsApp after delay
     setTimeout(function(){
 
         let orderId = Math.floor(Math.random() * 100000);
@@ -114,6 +140,8 @@ function payNow(){
                 + "Order ID: " + orderId + "%0A"
                 + "Name: " + user.name + "%0A"
                 + "Mobile: " + user.mobile + "%0A"
+                + "Address: " + user.address + "%0A"
+                + "Pincode: " + user.pincode + "%0A"
                 + "Amount: ₹" + total;
 
         let whatsapp = "https://wa.me/919923343791?text=" + msg;
