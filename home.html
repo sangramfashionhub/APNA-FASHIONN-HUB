@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Home Appliances</title>
+
+<style>
+body {
+    font-family: Arial;
+    margin: 0;
+    background: #f5f5f5;
+}
+
+h1 {
+    text-align: center;
+    padding: 20px;
+}
+
+/* GRID */
+.container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 20px;
+    padding: 20px;
+    max-width: 900px;
+    margin: auto;
+}
+
+/* CARD */
+.card {
+    background: white;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    transition: 0.3s;
+}
+
+.card:hover {
+    transform: scale(1.05);
+}
+
+/* IMAGE */
+.card img {
+    width: 100%;
+    height: 140px;
+    object-fit: cover;
+    border-radius: 12px 12px 0 0;
+}
+
+/* TEXT */
+.card h3 {
+    padding: 10px;
+}
+
+/* LINK REMOVE */
+.card a {
+    text-decoration: none;
+    color: black;
+}
+</style>
+</head>
+
+<body>
+
+<h1>Home Appliances</h1>
+
+<div class="container">
+
+    <div class="card">
+        <a href="kitchen.html">
+            <img src="photos/kitchen.jpg">
+            <h3>Kitchen</h3>
+        </a>
+    </div>
+
+    <div class="card">
+        <a href="daily.html">
+            <img src="photos/daily.jpg">
+            <h3>Daily Use</h3>
+        </a>
+    </div>
+
+    <div class="card">
+        <a href="personal.html">
+            <img src="photos/personal.jpg">
+            <h3>Personal Care</h3>
+        </a>
+    </div>
+
+    <div class="card">
+        <a href="mobile.html">
+            <img src="photos/mobile.jpg">
+            <h3>Mobile Accessories</h3>
+        </a>
+    </div>
+
+    <div class="card">
+        <a href="home.html">
+            <img src="photos/home.jpg">
+            <h3>Home Utility</h3>
+        </a>
+    </div>
+
+    <div class="card">
+        <a href="trending.html">
+            <img src="photos/trending.jpg">
+            <h3>Trending</h3>
+        </a>
+    </div>
+
+</div>
+
+</body>
+</html>
