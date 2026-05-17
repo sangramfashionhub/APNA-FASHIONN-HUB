@@ -16,7 +16,7 @@
         }
 
         .product-card {
-            width: 200px;
+            width: 220px;
             margin: 20px;
             border: 1px solid #ccc;
             padding: 10px;
@@ -33,12 +33,18 @@
             font-weight: bold;
         }
 
+        select, input {
+            margin: 5px;
+            padding: 5px;
+        }
+
         button {
             background: black;
             color: white;
             padding: 8px;
             border: none;
             cursor: pointer;
+            margin: 5px;
         }
 
         button:hover {
@@ -54,64 +60,102 @@
 <div class="container" id="productList"></div>
 
 <script>
-// 🛒 PRODUCT LIST (HERE YOU ADD PRODUCTS)
+
+// 🛒 PRODUCTS
 let products = [
     { 
         name: "White Shirt",
-        color: "white",
         price: 499,
         size: ["S","L","XL","XXL"],
         image: "men.white.shirt.jpeg"
     },
     { 
         name: "Black Jeans",
-        color: "black",
         price: 999,
-        size: ["30","32","34","36","38","40","42"],
+        size: ["30","32","34","36","38"],
         image: "men.black.jean.jpeg"
     },
     { 
         name: "Red T-Shirt",
-        color: "red",
         price: 299,
-        size: ["S","L","XL","XXL"],
+        size: ["S","L","XL"],
         image: "men.tshirt.red.jpeg"
-    },
-    { 
-        name: "Gray Shirt",
-        color: "gray",
-        price: 1199,
-        size: ["S","L","XL","XXL"],
-        image: "men.gray.shirt.jpeg"
     }
 ];
 
-// 🛒 ADD TO CART FUNCTION
-function addToCart(name, price, image) {
+// 🛒 ADD TO CART
+function addToCart(name, price, image, size, qty) {
+
     let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
-    cart.push({ name, price, image });
+    cart.push({ name, price, image, size, qty });
 
     localStorage.setItem("cart", JSON.stringify(cart));
 
-    alert(name + " added to cart ✅");
+    alert("Added to cart ✅");
 }
 
-// 🛒 SHOW PRODUCTS ON PAGE
+// 💰 BUY NOW (UPI + WhatsApp)
+function buyNow(name, price, size, qty) {
+
+    let total = price * qty;
+
+    // UPI Payment
+    let upi = `upi://pay?pa=9923343791@ybl&pn=FashionHub&am=${total}&cu=INR`;
+    window.location.href = upi;
+
+    // WhatsApp message
+    let msg = `Order Details:\nProduct: ${name}\nSize: ${size}\nQty: ${qty}\nTotal: ₹${total}`;
+    let phone = "919923343791";
+
+    let url = `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
+    
+    setTimeout(() => {
+        window.open(url, "_blank");
+    }, 2000);
+}
+
+// 🛒 SHOW PRODUCTS
 let container = document.getElementById("productList");
 
-products.forEach(item => {
+products.forEach((item, index) => {
+
     container.innerHTML += `
         <div class="product-card">
             <img src="${item.image}">
             <h3>${item.name}</h3>
             <p class="price">₹${item.price}</p>
-            <button onclick="addToCart('${item.name}', ${item.price}, '${item.image}')">
+
+            <select id="size${index}">
+                ${item.size.map(s => `<option>${s}</option>`).join("")}
+            </select>
+
+            <input type="number" id="qty${index}" value="1" min="1">
+
+            <br>
+
+            <button onclick="addToCart(
+                '${item.name}', 
+                ${item.price}, 
+                '${item.image}',
+                document.getElementById('size${index}').value,
+                document.getElementById('qty${index}').value
+            )">
                 Add to Cart
+            </button>
+
+            <button onclick="buyNow(
+                '${item.name}', 
+                ${item.price},
+                document.getElementById('size${index}').value,
+                document.getElementById('qty${index}').value
+            )">
+                Buy Now
             </button>
         </div>
     `;
 });
+
 </script>
 
 </body>
