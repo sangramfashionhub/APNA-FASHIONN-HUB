@@ -54,22 +54,16 @@
 </head>
 
 <body>
-    <div style="text-align:right; margin:10px;">
+
+<!-- 🛒 Cart Button -->
+<div style="text-align:right; margin:10px;">
     <a href="cart.html">
         <button>🛒 Cart</button>
     </a>
 </div>
 
 <h1>Men Collection</h1>
-<body>
 
-<h1>Men Collection</h1>
-
-<a href="cart.html">
-    <button>Go to Cart 🛒</button>
-</a>
-
-<div class="container" id="productList"></div>
 <div class="container" id="productList"></div>
 
 <script>
@@ -80,19 +74,19 @@ let products = [
         name: "White Shirt",
         price: 499,
         size: ["S","L","XL","XXL"],
-        image: "men.white.shirt.jpeg"
+        image: "images/men.white.shirt.jpeg"
     },
     { 
         name: "Black Jeans",
         price: 999,
         size: ["30","32","34","36","38"],
-        image: "men.black.jean.jpeg"
+        image: "images/men.black.jean.jpeg"
     },
     { 
         name: "Red T-Shirt",
         price: 299,
         size: ["S","L","XL"],
-        image: "men.tshirt.red.jpeg"
+        image: "images/men.tshirt.red.jpeg"
     }
 ];
 
@@ -105,7 +99,7 @@ function addToCart(name, price, image, size, qty) {
 
     localStorage.setItem("cart", JSON.stringify(cart));
 
-    alert("Added to cart ✅");
+    alert(name + " added to cart ✅");
 }
 
 // 💰 BUY NOW (UPI + WhatsApp)
