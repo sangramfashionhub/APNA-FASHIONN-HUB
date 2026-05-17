@@ -68,19 +68,27 @@ if(!user){
 </div>
 
 <!-- 📲 WhatsApp Button -->
-<div style="position:fixed; top:10px; right:10px;">
+<div style="
+    position: fixed;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 9999;
+">
+
     <button onclick="sendWhatsApp()" style="
         background: green;
         color: white;
-        padding: 15px 25px;
+        padding: 15px 30px;
         font-size: 18px;
         border: none;
-        border-radius: 10px;
+        border-radius: 12px;
         cursor: pointer;
-        box-shadow: 0px 0px 10px gray;
+        box-shadow: 0px 5px 15px rgba(0,0,0,0.3);
     ">
         📲 Send WhatsApp Order
     </button>
+
 </div>
 
 <div class="container" id="productList"></div>
