@@ -78,36 +78,30 @@ if(!user){
 
 // 🛒 PRODUCTS
 let products = [
-    { 
-        name: "White Shirt",
-        price: 499,
-        size: ["S","L","XL","XXL"],
-        image: "men.white.shirt.jpeg"
-    },
-    { 
-        name: "Black Jeans",
-        price: 999,
-        size: ["30","32","34","36","38"],
-        image: "men.black.jean.jpeg"
-    },
-    { 
-        name: "Red T-Shirt",
-        price: 299,
-        size: ["S","L","XL"],
-        image: "men.tshirt.red.jpeg"
-    }
+    { name: "White Shirt", price: 499, size: ["S","L","XL","XXL"], image: "men.white.shirt.jpeg" },
+    { name: "Black Jeans", price: 999, size: ["30","32","34","36","38"], image: "men.black.jean.jpeg" },
+    { name: "Red T-Shirt", price: 299, size: ["S","L","XL"], image: "men.tshirt.red.jpeg" }
 ];
 
-// 🛒 ADD TO CART
+// 🛒 ADD TO CART (FIXED)
 function addToCart(name, price, image, size, qty) {
+
+    qty = parseInt(qty); // ✅ FIX
+
     let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
     cart.push({ name, price, image, size, qty });
+
     localStorage.setItem("cart", JSON.stringify(cart));
+
     alert(name + " added to cart ✅");
 }
 
-// 💰 BUY NOW (FINAL)
+// 💰 BUY NOW (FINAL FIX)
 function buyNow(name, price, size, qty){
+
+    qty = parseInt(qty); // ✅ FIX
+    let total = price * qty;
 
     let user = JSON.parse(localStorage.getItem("user"));
 
@@ -117,13 +111,11 @@ function buyNow(name, price, size, qty){
         return;
     }
 
-    let total = price * qty;
-
-    // UPI Payment
+    // 🟢 UPI
     let upi = `upi://pay?pa=9923343791@ybl&pn=FashionHub&am=${total}&cu=INR`;
     window.location.href = upi;
 
-    // WhatsApp Message
+    // 🟢 WhatsApp (delay increase)
     let msg = `🛒 Order Details:
 Product: ${name}
 Size: ${size}
@@ -140,7 +132,7 @@ Pincode: ${user.pincode}`;
 
     setTimeout(()=>{
         window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, "_blank");
-    },2000);
+    },5000); // ✅ 5 sec delay
 }
 
 // 🛒 SHOW PRODUCTS
