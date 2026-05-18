@@ -111,6 +111,53 @@ function payNow(){
 
     let orderId = Date.now();
 
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+    let productList = "";
+    let total = 0;
+
+    cart.forEach(item => {
+        let itemTotal = item.price * item.qty;
+        total += itemTotal;
+
+        productList += `
+🛍️ Product: ${item.name}
+📏 Size: ${item.size}
+🔢 Qty: ${item.qty}
+💰 Price: ₹${itemTotal}
+--------------------\n`;
+    });
+
+    let msg = `🛍️ NEW ORDER
+🆔 Order ID: ${orderId}
+
+👤 Name: ${user.name}
+📱 Mobile: ${user.mobile}
+🏠 Address: ${user.address}
+📍 Pincode: ${user.pincode}
+
+🛒 ITEMS:
+${productList}
+
+💰 TOTAL: ₹${total}`;
+
+    let whatsapp = "https://wa.me/919923343791?text=" + encodeURIComponent(msg);
+
+    localStorage.removeItem("cart");
+
+    window.open(whatsapp, "_blank");
+}
+
+    let user = JSON.parse(localStorage.getItem("user"));
+
+    if(!user){
+        alert("Please login first");
+        window.location.href = "login.html";
+        return;
+    }
+
+    let orderId = Date.now();
+
     let msg = `🛍️ ORDER
 ID: ${orderId}
 Name: ${user.name}
