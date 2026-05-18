@@ -24,16 +24,24 @@
             border: 1px solid #ccc;
             padding: 10px;
             border-radius: 10px;
+            background: white;
         }
 
         img {
             width: 100%;
             height: 200px;
+            object-fit: cover;
         }
 
-        .price { color: green; font-weight: bold; }
+        .price {
+            color: green;
+            font-weight: bold;
+        }
 
-        select, input { margin: 5px; padding: 5px; }
+        select, input {
+            margin: 5px;
+            padding: 5px;
+        }
 
         button {
             background: black;
@@ -44,7 +52,9 @@
             margin: 5px;
         }
 
-        button:hover { background: green; }
+        button:hover {
+            background: green;
+        }
 
         .wa-btn{
             position: fixed;
@@ -83,40 +93,24 @@ if(!user){
     </a>
 </div>
 
-<!-- 📲 WhatsApp Button -->
+<!-- 📲 WhatsApp -->
 <div class="wa-btn">
     <button onclick="sendWhatsApp()">📲 Send WhatsApp Order</button>
 </div>
 
 <div class="container" id="productList"></div>
 
-<!-- 🚀 FIREBASE + JS -->
-<script type="module">
+<script>
 
-// 🔥 FIREBASE IMPORT
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
-
-// 🔥 YOUR FIREBASE CONFIG (replace with yours)
-const firebaseConfig = {
-    apiKey: "YOUR_KEY",
-    authDomain: "YOUR_DOMAIN",
-    databaseURL: "YOUR_DB_URL",
-    projectId: "YOUR_ID"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
-
-// 🟢 PRODUCTS
+// 🟢 PRODUCTS (FIXED PATH)
 let products = [
-    { name: "White Shirt", price: 4, size: ["S","L","XL"], image: "men.white.shirt.jpeg" },
+    { name: "White Shirt", price: 499, size: ["S","L","XL"], image: "men.white.shirt.jpeg" },
     { name: "Black Jeans", price: 999, size: ["30","32","34"], image: "men.black.jean.jpeg" },
     { name: "Red T-Shirt", price: 299, size: ["S","L","XL"], image: "men.tshirt.red.jpeg" }
 ];
 
 // 🛒 ADD TO CART
-window.addToCart = function(name, price, image, size, qty){
+function addToCart(name, price, image, size, qty){
 
     qty = parseInt(qty);
 
@@ -129,8 +123,8 @@ window.addToCart = function(name, price, image, size, qty){
     alert("Added to cart ✅");
 }
 
-// 💳 BUY NOW + SAVE FIREBASE
-window.buyNow = function(name, price, size, qty){
+// 💳 BUY NOW
+function buyNow(name, price, size, qty){
 
     qty = parseInt(qty);
     let total = price * qty;
@@ -139,24 +133,6 @@ window.buyNow = function(name, price, size, qty){
 
     let orderId = Date.now();
 
-    let order = {
-        id: orderId,
-        name,
-        price,
-        size,
-        qty,
-        total,
-        user: user.name,
-        mobile: user.mobile,
-        address: user.address,
-        pincode: user.pincode,
-        status: "Pending"
-    };
-
-    // 🔥 SAVE TO FIREBASE
-    set(ref(db, "orders/" + orderId), order);
-
-    // 📲 WhatsApp message
     let msg = `🛍️ Order
 ID: ${orderId}
 Product: ${name}
@@ -168,19 +144,18 @@ Mobile: ${user.mobile}
 Address: ${user.address}
 Pincode: ${user.pincode}`;
 
-    localStorage.setItem("whatsappLink",
-        "https://wa.me/919923343791?text=" + encodeURIComponent(msg)
-    );
+    let whatsapp = "https://wa.me/919923343791?text=" + encodeURIComponent(msg);
 
-    // 💳 UPI OPEN
+    localStorage.setItem("whatsappLink", whatsapp);
+
     let upi = "upi://pay?pa=9923343791@upi&pn=FashionHub&am=" + total + "&cu=INR";
     window.location.href = upi;
 
     alert("Payment नंतर WhatsApp click करा 📲");
 }
 
-// 📲 WHATSAPP SEND
-window.sendWhatsApp = function(){
+// 📲 WhatsApp SEND
+function sendWhatsApp(){
 
     let link = localStorage.getItem("whatsappLink");
 
@@ -192,46 +167,53 @@ window.sendWhatsApp = function(){
     window.open(link, "_blank");
 }
 
-// 🟢 SHOW PRODUCTS
-let container = document.getElementById("productList");
+// 🟢 RENDER PRODUCTS (FIXED)
+window.onload = function(){
 
-products.forEach((item, index) => {
+    let container = document.getElementById("productList");
 
-    container.innerHTML += `
-        <div class="product-card">
-            <img src="${item.image}">
-            <h3>${item.name}</h3>
-            <p class="price">₹${item.price}</p>
+    products.forEach((item, index) => {
 
-            <select id="size${index}">
-                ${item.size.map(s => `<option>${s}</option>`).join("")}
-            </select>
+        container.innerHTML += `
+            <div class="product-card">
 
-            <input type="number" id="qty${index}" value="1" min="1">
+                <img src="${item.image}" 
+                     onerror="this.src='https://via.placeholder.com/200'">
 
-            <br>
+                <h3>${item.name}</h3>
+                <p class="price">₹${item.price}</p>
 
-            <button onclick="addToCart(
-                '${item.name}',
-                ${item.price},
-                '${item.image}',
-                document.getElementById('size${index}').value,
-                document.getElementById('qty${index}').value
-            )">
-                Add to Cart
-            </button>
+                <select id="size${index}">
+                    ${item.size.map(s => `<option>${s}</option>`).join("")}
+                </select>
 
-            <button onclick="buyNow(
-                '${item.name}',
-                ${item.price},
-                document.getElementById('size${index}').value,
-                document.getElementById('qty${index}').value
-            )">
-                Buy Now
-            </button>
-        </div>
-    `;
-});
+                <input type="number" id="qty${index}" value="1" min="1">
+
+                <br>
+
+                <button onclick="addToCart(
+                    '${item.name}',
+                    ${item.price},
+                    '${item.image}',
+                    document.getElementById('size${index}').value,
+                    document.getElementById('qty${index}').value
+                )">
+                    Add to Cart
+                </button>
+
+                <button onclick="buyNow(
+                    '${item.name}',
+                    ${item.price},
+                    document.getElementById('size${index}').value,
+                    document.getElementById('qty${index}').value
+                )">
+                    Buy Now
+                </button>
+
+            </div>
+        `;
+    });
+};
 
 </script>
 
