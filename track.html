@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Track Order</title>
+</head>
+
+<body>
+
+<h1>My Orders</h1>
+
+<div id="track"></div>
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "YOUR_KEY",
+  databaseURL: "YOUR_DB_URL"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+let div = document.getElementById("track");
+
+let user = JSON.parse(localStorage.getItem("user")) || {mobile:"000"};
+
+// 🔥 LOAD ORDERS
+onValue(ref(db,"orders"), (snap)=>{
+
+div.innerHTML = "";
+
+let data = snap.val();
+
+for(let id in data){
+
+let o = data[id];
+
+if(o.mobile == user.mobile){
+
+div.innerHTML += `
+<div style="border:1px solid green; margin:10px; padding:10px;">
+<p>Product: ${o.name}</p>
+<p>Amount: ₹${o.total}</p>
+<p>Status: <b>${o.status}</b></p>
+</div>
+`;
+}
+
+}
+
+});
+
+</script>
+
+</body>
+</html>
