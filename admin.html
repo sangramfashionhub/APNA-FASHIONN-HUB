@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Admin Panel</title>
+</head>
+
+<body>
+
+<h1>Orders Admin</h1>
+
+<div id="orders"></div>
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getDatabase, ref, onValue, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "YOUR_KEY",
+  databaseURL: "YOUR_DB_URL"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+let div = document.getElementById("orders");
+
+// 🔥 LOAD ORDERS
+onValue(ref(db,"orders"), (snap)=>{
+
+div.innerHTML = "";
+
+let data = snap.val();
+
+for(let id in data){
+
+let o = data[id];
+
+div.innerHTML += `
+<div style="border:1px solid #000; margin:10px; padding:10px;">
+<p>Product: ${o.name}</p>
+<p>Customer: ${o.user}</p>
+<p>Status: ${o.status}</p>
+
+<button onclick="setStatus('${id}','Accepted')">Accept</button>
+<button onclick="setStatus('${id}','Shipped')">Ship</button>
+<button onclick="setStatus('${id}','Delivered')">Deliver</button>
+</div>
+`;
+}
+
+});
+
+// 🔥 STATUS UPDATE
+window.setStatus = function(id,status){
+update(ref(db,"orders/"+id),{
+status:status
+});
+}
+
+</script>
+
+</body>
+</html>
