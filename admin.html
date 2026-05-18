@@ -1,62 +1,109 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Admin Panel</title>
+    <title>Admin Panel - Orders</title>
+
+    <style>
+        body { font-family: Arial; text-align: center; }
+
+        h1 {
+            background: black;
+            color: white;
+            padding: 10px;
+            padding: 10px;
+        }
+
+        .card {
+            border: 1px solid #ccc;
+            margin: 10px;
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        button {
+            margin: 5px;
+            padding: 8px 12px;
+            border: none;
+            cursor: pointer;
+            color: white;
+        }
+
+        .accept { background: orange; }
+        .ship { background: blue; }
+        .deliver { background: green; }
+    </style>
 </head>
 
 <body>
 
-<h1>Orders Admin</h1>
+<h1>🛠️ Admin Panel - Orders</h1>
 
 <div id="orders"></div>
 
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getDatabase, ref, onValue, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+import { getDatabase, ref, get, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
 const firebaseConfig = {
-  apiKey: "YOUR_KEY",
-  databaseURL: "YOUR_DB_URL"
+    apiKey: "YOUR_KEY",
+    authDomain: "YOUR_DOMAIN",
+    databaseURL: "YOUR_DB_URL",
+    projectId: "YOUR_ID"
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-let div = document.getElementById("orders");
+// 📦 LOAD ORDERS
+async function loadOrders(){
 
-// 🔥 LOAD ORDERS
-onValue(ref(db,"orders"), (snap)=>{
+    let snap = await get(ref(db, "orders"));
 
-div.innerHTML = "";
+    let container = document.getElementById("orders");
+    container.innerHTML = "";
 
-let data = snap.val();
+    if(snap.exists()){
 
-for(let id in data){
+        let data = snap.val();
 
-let o = data[id];
+        Object.keys(data).forEach(id => {
 
-div.innerHTML += `
-<div style="border:1px solid #000; margin:10px; padding:10px;">
-<p>Product: ${o.name}</p>
-<p>Customer: ${o.user}</p>
-<p>Status: ${o.status}</p>
+            let order = data[id];
 
-<button onclick="setStatus('${id}','Accepted')">Accept</button>
-<button onclick="setStatus('${id}','Shipped')">Ship</button>
-<button onclick="setStatus('${id}','Delivered')">Deliver</button>
-</div>
-`;
+            container.innerHTML += `
+                <div class="card">
+                    <h3>Order ID: ${id}</h3>
+                    <p>Product: ${order.name}</p>
+                    <p>Qty: ${order.qty}</p>
+                    <p>Status: <b>${order.status}</b></p>
+
+                    <button class="accept" onclick="updateStatus('${id}','Accepted')">Accept</button>
+                    <button class="ship" onclick="updateStatus('${id}','Shipped')">Ship</button>
+                    <button class="deliver" onclick="updateStatus('${id}','Delivered')">Deliver</button>
+                </div>
+            `;
+        });
+
+    } else {
+        container.innerHTML = "No orders found ❌";
+    }
 }
 
-});
+// 🔄 UPDATE STATUS
+window.updateStatus = async function(id, status){
 
-// 🔥 STATUS UPDATE
-window.setStatus = function(id,status){
-update(ref(db,"orders/"+id),{
-status:status
-});
+    await update(ref(db, "orders/" + id), {
+        status: status
+    });
+
+    alert("Status updated to " + status);
+
+    loadOrders();
 }
+
+// load on start
+loadOrders();
 
 </script>
 
