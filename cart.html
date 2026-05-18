@@ -4,7 +4,11 @@
     <title>Your Cart</title>
 
     <style>
-        body { font-family: Arial; text-align: center; }
+        body {
+            font-family: Arial;
+            text-align: center;
+            background: #f5f5f5;
+        }
 
         h2 {
             background: black;
@@ -13,10 +17,12 @@
         }
 
         .item {
+            background: white;
             border: 1px solid #ccc;
-            margin: 10px;
+            margin: 10px auto;
             padding: 10px;
             border-radius: 10px;
+            width: 300px;
         }
 
         img {
@@ -27,11 +33,11 @@
 
         button {
             padding: 8px 12px;
-            background: black;
-            color: white;
             border: none;
             cursor: pointer;
             margin: 5px;
+            color: white;
+            background: black;
         }
 
         button:hover {
@@ -42,6 +48,12 @@
             background: green;
             padding: 12px 20px;
             font-size: 16px;
+            border-radius: 8px;
+        }
+
+        .total-box {
+            margin-top: 20px;
+            font-size: 18px;
         }
     </style>
 </head>
@@ -52,22 +64,23 @@
 
 <div id="cartBox"></div>
 
-<h3>Total: ₹<span id="total">0</span></h3>
+<div class="total-box">
+    <h3>Total: ₹<span id="total">0</span></h3>
+</div>
 
-<button class="pay" onclick="payNow()">💳 Pay Now</button>
+<button class="pay" onclick="payNow()">💳 Pay & Order</button>
 
 <script>
 
 // 🔥 LOAD CART
 let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
-let box = document.getElementById("cartBox");
-let total = 0;
-
 function renderCart(){
 
+    let box = document.getElementById("cartBox");
     box.innerHTML = "";
-    total = 0;
+
+    let total = 0;
 
     cart.forEach((item, index) => {
 
@@ -98,7 +111,7 @@ function removeItem(index){
     renderCart();
 }
 
-// 💳 PAYMENT + WHATSAPP
+// 💳 PAY NOW + WHATSAPP ORDER
 function payNow(){
 
     let user = JSON.parse(localStorage.getItem("user"));
@@ -111,12 +124,11 @@ function payNow(){
 
     let orderId = Date.now();
 
-    let cart = JSON.parse(localStorage.getItem("cart")) || [];
-
     let productList = "";
     let total = 0;
 
     cart.forEach(item => {
+
         let itemTotal = item.price * item.qty;
         total += itemTotal;
 
@@ -143,38 +155,13 @@ ${productList}
 
     let whatsapp = "https://wa.me/919923343791?text=" + encodeURIComponent(msg);
 
+    // clear cart after order
     localStorage.removeItem("cart");
 
     window.open(whatsapp, "_blank");
 }
 
-    let user = JSON.parse(localStorage.getItem("user"));
-
-    if(!user){
-        alert("Please login first");
-        window.location.href = "login.html";
-        return;
-    }
-
-    let orderId = Date.now();
-
-    let msg = `🛍️ ORDER
-ID: ${orderId}
-Name: ${user.name}
-Mobile: ${user.mobile}
-Address: ${user.address}
-Pincode: ${user.pincode}
-Total: ₹${total}`;
-
-    let whatsapp = "https://wa.me/919923343791?text=" + encodeURIComponent(msg);
-
-    // clear cart
-    localStorage.removeItem("cart");
-
-    window.open(whatsapp, "_blank");
-}
-
-// start
+// START
 renderCart();
 
 </script>
