@@ -4,10 +4,7 @@
     <title>Your Cart</title>
 
     <style>
-        body {
-            font-family: Arial;
-            text-align: center;
-        }
+        body { font-family: Arial; text-align: center; }
 
         h2 {
             background: black;
@@ -15,31 +12,36 @@
             padding: 10px;
         }
 
-        .box {
-            margin: 20px;
-            padding: 20px;
+        .item {
             border: 1px solid #ccc;
+            margin: 10px;
+            padding: 10px;
             border-radius: 10px;
         }
 
-        .item {
-            margin: 10px;
-            padding: 10px;
-            border-bottom: 1px solid #ddd;
+        img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
         }
 
         button {
-            padding: 8px 15px;
-            margin: 5px;
+            padding: 8px 12px;
             background: black;
             color: white;
             border: none;
             cursor: pointer;
-            border-radius: 5px;
+            margin: 5px;
         }
 
         button:hover {
             background: green;
+        }
+
+        .pay {
+            background: green;
+            padding: 12px 20px;
+            font-size: 16px;
         }
     </style>
 </head>
@@ -48,119 +50,85 @@
 
 <h2>🛒 Your Cart</h2>
 
-<div class="box">
+<div id="cartBox"></div>
 
-    <div id="items"></div>
+<h3>Total: ₹<span id="total">0</span></h3>
 
-    <h3>Total: ₹<span id="total">0</span></h3>
-
-    <button onclick="clearCart()">🗑️ Clear Cart</button>
-    <br><br>
-
-    <button onclick="payNow()">💳 Pay & Order</button>
-
-    <br><br>
-
-    <button onclick="sendWhatsApp()">📲 Send Order on WhatsApp</button>
-
-</div>
+<button class="pay" onclick="payNow()">💳 Pay Now</button>
 
 <script>
 
-// 🔐 Login check
-let user = JSON.parse(localStorage.getItem("user"));
-if(!user){
-    window.location.href = "login.html";
-}
-
-// 🛒 Load cart
+// 🔥 LOAD CART
 let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
-let itemsDiv = document.getElementById("items");
+let box = document.getElementById("cartBox");
 let total = 0;
 
-// 📦 Show cart items
-function loadCart(){
+function renderCart(){
 
-    itemsDiv.innerHTML = "";
+    box.innerHTML = "";
     total = 0;
 
     cart.forEach((item, index) => {
 
         let itemTotal = item.price * item.qty;
+        total += itemTotal;
 
-        itemsDiv.innerHTML += `
+        box.innerHTML += `
             <div class="item">
-                <b>${item.name}</b> (${item.size})<br>
-                ₹${item.price} × ${item.qty} = ₹${itemTotal}
-                <br>
-                <button onclick="removeItem(${index})">❌ Remove</button>
+                <img src="${item.image}">
+                <h3>${item.name}</h3>
+                <p>Size: ${item.size}</p>
+                <p>Qty: ${item.qty}</p>
+                <p>Price: ₹${itemTotal}</p>
+
+                <button onclick="removeItem(${index})">Remove</button>
             </div>
         `;
-
-        total += itemTotal;
     });
 
     document.getElementById("total").innerText = total;
 }
 
-loadCart();
-
-// ❌ Remove item
+// ❌ REMOVE ITEM
 function removeItem(index){
+
     cart.splice(index, 1);
     localStorage.setItem("cart", JSON.stringify(cart));
-    loadCart();
+    renderCart();
 }
 
-// 🗑️ Clear cart
-function clearCart(){
-    localStorage.removeItem("cart");
-    location.reload();
-}
-
-// 💳 Pay now (UPI first)
+// 💳 PAYMENT + WHATSAPP
 function payNow(){
 
-    if(total == 0){
-        alert("Cart is empty");
+    let user = JSON.parse(localStorage.getItem("user"));
+
+    if(!user){
+        alert("Please login first");
+        window.location.href = "login.html";
         return;
     }
 
-    let orderId = Math.floor(Math.random() * 100000);
+    let orderId = Date.now();
 
-    let msg = "🛍️ *New Order* %0A"
-            + "Order ID: " + orderId + "%0A"
-            + "Name: " + user.name + "%0A"
-            + "Mobile: " + user.mobile + "%0A"
-            + "Address: " + user.address + "%0A"
-            + "Pincode: " + user.pincode + "%0A"
-            + "Amount: ₹" + total;
+    let msg = `🛍️ ORDER
+ID: ${orderId}
+Name: ${user.name}
+Mobile: ${user.mobile}
+Address: ${user.address}
+Pincode: ${user.pincode}
+Total: ₹${total}`;
 
-    let whatsapp = "https://wa.me/919923343791?text=" + msg;
+    let whatsapp = "https://wa.me/919923343791?text=" + encodeURIComponent(msg);
 
-    // save whatsapp link
-    localStorage.setItem("whatsappLink", whatsapp);
+    // clear cart
+    localStorage.removeItem("cart");
 
-    // UPI open
-    let upiLink = "upi://pay?pa=9923343791@upi&pn=FashionHub&am=" + total + "&cu=INR";
-    window.location.href = upiLink;
-
-    alert("Payment केल्यानंतर WhatsApp button क्लिक करा 📲");
+    window.open(whatsapp, "_blank");
 }
 
-// 📲 WhatsApp send
-function sendWhatsApp(){
-
-    let link = localStorage.getItem("whatsappLink");
-
-    if(!link){
-        alert("First Pay & Order click करा");
-        return;
-    }
-
-    window.open(link, "_blank");
-}
+// start
+renderCart();
 
 </script>
 
